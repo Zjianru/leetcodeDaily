@@ -1,0 +1,175 @@
+![图解每日一练.jpg](https://pic.leetcode-cn.com/1615817903-fzmpwZ-%E5%9B%BE%E8%A7%A3%E6%AF%8F%E6%97%A5%E4%B8%80%E7%BB%83.jpg)
+
+---
+
+### 🧠 解题思路
+
+通过题意所示，我们可以使用暴破，双指针+额外存储空间来完成该题，但是这两种做法的空间和时间复杂度至少都是 $O(m + n)$ 。
+
+这个时候我们就要分析，为什么告诉我们 $nums1.length >= m + n$ ?
+
+很明显就能猜出出题者的意图，那就是考查 **原地修改** ，将空间复杂度降低到 $O(1)$。
+
+因为这样不需要使用额外的数组空间了，我们完全可以把 $nums2$ 也放入 $nums1$ 中。
+
+原地修改时，为了避免从前往后遍历导致原有数组元素被破坏掉，我们要选择从后往前遍历！
+
+所以，我们总共需要创建三个指针，两个指针用于指向 $ums1$ 和 $nums2$ 的初始化元素数量的末位，也就是分别指向 $m-1$ 和 $n-1$ 的位置，还有一个指针，我们指向 $nums1$ 数组末位即可。
+
+既然都知道了，那还等什么，开整！
+
+---
+
+### 🎨 图解演示
+
+<![1.jpg](https://pic.leetcode-cn.com/1617592243-iFTFCu-1.jpg),![2.jpg](https://pic.leetcode-cn.com/1617592246-gEEGMZ-2.jpg),![3.jpg](https://pic.leetcode-cn.com/1617592249-ZbCltu-3.jpg),![4.jpg](https://pic.leetcode-cn.com/1617592252-NWqDin-4.jpg),![5.jpg](https://pic.leetcode-cn.com/1617592254-dPHsFP-5.jpg),![6.jpg](https://pic.leetcode-cn.com/1617592257-YBlHGM-6.jpg),![7.jpg](https://pic.leetcode-cn.com/1617592260-fIjOxY-7.jpg),![8.jpg](https://pic.leetcode-cn.com/1617592262-ayhhzR-8.jpg),![9.jpg](https://pic.leetcode-cn.com/1617592264-oDsTGl-9.jpg),![10.jpg](https://pic.leetcode-cn.com/1617592266-NGEddv-10.jpg),![11.jpg](https://pic.leetcode-cn.com/1617592268-KnuhxZ-11.jpg),![12.jpg](https://pic.leetcode-cn.com/1617592270-CgHEhX-12.jpg),![13.jpg](https://pic.leetcode-cn.com/1617592272-ELIvKg-13.jpg)>
+
+---
+
+### 🍭 示例代码
+
+* []
+
+```Javascript
+var merge = function(nums1, m, nums2, n) {
+    let i = m - 1, j = n - 1, k = m + n - 1;
+    while (i >= 0 || j >= 0) {
+        if(i < 0) nums1[k--] = nums2[j--];
+        else if(j < 0) nums1[k--] = nums1[i--];
+        else if(nums1[i] < nums2[j]) nums1[k--] = nums2[j--];
+        else nums1[k--] = nums1[i--];
+    }
+    return nums1;
+};
+```
+
+* []
+
+```C++
+class Solution {
+public:
+    void merge(vector<int>& nums1, int m, vector<int>& nums2, int n) {
+        int p1 = m - 1, p2 = n - 1;
+        int tail = m + n - 1;
+        int cur;
+        while (p1 >= 0 || p2 >= 0) {
+            if (p1 == -1) {
+                cur = nums2[p2--];
+            } else if (p2 == -1) {
+                cur = nums1[p1--];
+            } else if (nums1[p1] > nums2[p2]) {
+                cur = nums1[p1--];
+            } else {
+                cur = nums2[p2--];
+            }
+            nums1[tail--] = cur;
+        }
+    }
+};
+```
+
+* []
+
+```Java
+class Solution {
+    public void merge(int[] nums1, int m, int[] nums2, int n) {
+        int p1 = m - 1, p2 = n - 1;
+        int tail = m + n - 1;
+        int cur;
+        while (p1 >= 0 || p2 >= 0) {
+            if (p1 == -1) {
+                cur = nums2[p2--];
+            } else if (p2 == -1) {
+                cur = nums1[p1--];
+            } else if (nums1[p1] > nums2[p2]) {
+                cur = nums1[p1--];
+            } else {
+                cur = nums2[p2--];
+            }
+            nums1[tail--] = cur;
+        }
+    }
+}
+```
+
+* []
+
+```Python
+class Solution:
+    def merge(self, nums1: List[int], m: int, nums2: List[int], n: int) -> None:
+        """
+        Do not return anything, modify nums1 in-place instead.
+        """
+        p1, p2 = m - 1, n - 1
+        tail = m + n - 1
+        while p1 >= 0 or p2 >= 0:
+            if p1 == -1:
+                nums1[tail] = nums2[p2]
+                p2 -= 1
+            elif p2 == -1:
+                nums1[tail] = nums1[p1]
+                p1 -= 1
+            elif nums1[p1] > nums2[p2]:
+                nums1[tail] = nums1[p1]
+                p1 -= 1
+            else:
+                nums1[tail] = nums2[p2]
+                p2 -= 1
+            tail -= 1
+```
+
+* []
+
+```Golang
+func merge(nums1 []int, m int, nums2 []int, n int) {
+    for p1, p2, tail := m-1, n-1, m+n-1; p1 >= 0 || p2 >= 0; tail-- {
+        var cur int
+        if p1 == -1 {
+            cur = nums2[p2]
+            p2--
+        } else if p2 == -1 {
+            cur = nums1[p1]
+            p1--
+        } else if nums1[p1] > nums2[p2] {
+            cur = nums1[p1]
+            p1--
+        } else {
+            cur = nums2[p2]
+            p2--
+        }
+        nums1[tail] = cur
+    }
+}
+```
+
+* []
+
+```C
+void merge(int* nums1, int nums1Size, int m, int* nums2, int nums2Size, int n) {
+    int p1 = m - 1, p2 = n - 1;
+    int tail = m + n - 1;
+    int cur;
+    while (p1 >= 0 || p2 >= 0) {
+        if (p1 == -1) {
+            cur = nums2[p2--];
+        } else if (p2 == -1) {
+            cur = nums1[p1--];
+        } else if (nums1[p1] > nums2[p2]) {
+            cur = nums1[p1--];
+        } else {
+            cur = nums2[p2--];
+        }
+        nums1[tail--] = cur;
+    }
+}
+```
+
+---
+
+### 转身挥手
+
+嘿，少年，做图不易，留下个赞或评论再走吧！谢啦~ 💐
+
+差点忘了，祝你牛年大吉 🐮 ，AC 和 Offer 📑 多多益善~
+
+⛲⛲⛲ 期待下次再见~
